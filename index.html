@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>这是什么我不造</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
+    <link rel="stylesheet" href="https://fontsapi.zeoseven.com/69/main/result.css" />
+    <style>
+        :root {
+            /* 颜色变量 */
+            --teal-50: #f0fdfa;
+            --teal-500: #14b8a6;
+            --slate-50: #f8fafc;
+            --slate-500: #64748b;
+            --slate-800: #1e293b;
+            --white: #ffffff;
+            --teal-light: rgba(20, 184, 166, 0.8);
+            --teal-hover: rgba(20, 184, 166, 1);
+        }
+
+        /* 全局样式 */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: "Noto Sans CJK", sans-serif;
+            overflow-x: hidden;
+            background-color: var(--white);
+            color: var(--slate-800);
+        }
+
+        /* 实用工具类 */
+        .container {
+            max-width: 720px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+
+        .text-center {
+            text-align: center;
+        }
+
+        /* 导航栏样式 */
+        .nav-bar {
+            position: fixed;
+            top: -60px; 
+            left: 0;
+            width: 100%;
+            height: 60px;
+            background: var(--teal-light);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 2rem;
+            z-index: 1000;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            transition: top 0.25s ease;
+        }
+
+        .nav-bar.visible {
+            top: 0; 
+        }
+
+        .nav-title {
+            color: var(--white);
+            font-size: 1.25rem;
+            font-weight: 600;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 1.5rem;
+        }
+
+        .nav-link {
+            color: #ccfbf1;
+            text-decoration: none;
+            transition: color 0.125s ease-in-out;
+            font-size: 0.9rem;
+        }
+
+        .nav-link:hover {
+            color: var(--white);
+        }
+
+        /* 英雄区域样式 */
+        .hero {
+            height: 100vh;
+            width: 100%;
+            background-image: url('/img/title.jpg');
+            background-size: cover;
+            background-position: center;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+        }
+
+        .hero-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(4, 47, 46, 0.1);
+            z-index: 1;
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 2;
+            text-align: center;
+            max-width: 720px;
+            padding: 0 2rem;
+        }
+
+        .hero-title {
+            font-size: 2.25rem;
+            font-weight: 700;
+            color: var(--white);
+            margin-bottom: 1rem;
+        }
+
+        .hero-subtitle {
+            font-size: 1.25rem;
+            color: var(--teal-50);
+            max-width: 32rem;
+            margin: 0 auto;
+        }
+
+        /* 文章容器 */
+        .article-container {
+            padding: 4rem 0;
+        }
+
+        .article-entry {
+            padding: 1.75rem 0;
+            border-bottom: 1px solid #e2e8f0;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.25s ease;
+        }
+
+        .article-entry.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .article-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 0.75rem;
+            display: block;
+        }
+
+        .article-title-text {
+            text-decoration: none;
+            color: var(--slate-800);
+            transition: color 0.125s ease-in-out;
+        }
+
+        .article-title-text:hover {
+            color: var(--teal-500);
+        }
+
+        .article-meta {
+            color: var(--slate-500);
+            font-size: 0.875rem;
+        }
+
+        .tag-link {
+            color: inherit;
+            text-decoration: none;
+            transition: all 0.125s ease-in-out;
+            border-bottom: 1px dashed transparent;
+        }
+
+        .tag-link:hover {
+            color: var(--teal-500);
+            border-bottom-color: var(--teal-500);
+        }
+
+        /* 页脚样式 */
+        .footer {
+            background-color: var(--slate-50);
+            padding: 2rem 0;
+        }
+
+        .footer-content {
+            max-width: 720px;
+            margin: 0 auto;
+            padding: 0 1rem;
+            text-align: center;
+            color: var(--slate-500);
+        }
+
+        /* 响应式设计 */
+        @media (min-width: 768px) {
+            .hero-title {
+                font-size: 3.75rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 导航栏 -->
+    <nav class="nav-bar">
+        <div class="nav-title">这是什么我不造</div>
+        <div class="nav-links">
+            <a href="/" class="nav-link">首页</a>
+            <a href="/" class="nav-link">归档</a>
+            <a href="/" class="nav-link">友链</a>
+            <a href="/" class="nav-link">关于</a>
+        </div>
+    </nav>
+    
+    <!-- 全屏英雄区域 -->
+    <section class="hero">
+        <div class="hero-overlay"></div>
+        <div class="hero-content">
+            <h1 class="hero-title">这是什么我不造</h1>
+            <p class="hero-subtitle">
+                芝士团子在融化
+            </p>
+        </div>
+    </section>
+    
+    <!-- 文章列表 -->
+    <div class="container">
+        <!-- 由代码生成 -->
+        <section class="article-container"><div class="article-entry">
+<h1 class="article-title"><a class="article-title-text" href="/blog/2025-06-23_2024_zjuctf_writeup.html">2024 ZJUCTF WriteUp</a></h1>
+<div class="article-meta">
+<i class="fa-regular fa-calendar-days"></i>&ensp;2025-06-23&emsp;&emsp;
+<i class="fa-solid fa-tags"></i>&ensp;
+<a class="tag-link" href="/">编程</a>&ensp;<a class="tag-link" href="/">CTF</a>&ensp;<a class="tag-link" href="/">WriteUp</a>&ensp;<a class="tag-link" href="/">密码学</a>
+</div>
+</div>
+<div class="article-entry">
+<h1 class="article-title"><a class="article-title-text" href="/blog/2025-06-23_2024_sjtuctf_writeup.html">2024 SJTUCTF WriteUp</a></h1>
+<div class="article-meta">
+<i class="fa-regular fa-calendar-days"></i>&ensp;2025-06-23&emsp;&emsp;
+<i class="fa-solid fa-tags"></i>&ensp;
+<a class="tag-link" href="/">编程</a>&ensp;<a class="tag-link" href="/">CTF</a>&ensp;<a class="tag-link" href="/">WriteUp</a>&ensp;<a class="tag-link" href="/">密码学</a>
+</div>
+</div>
+<div class="article-entry">
+<h1 class="article-title"><a class="article-title-text" href="/blog/2025-06-23_cubic_pseudo-elliptic_integral.html">三次根号伪椭圆积分</a></h1>
+<div class="article-meta">
+<i class="fa-regular fa-calendar-days"></i>&ensp;2025-06-23&emsp;&emsp;
+<i class="fa-solid fa-tags"></i>&ensp;
+<a class="tag-link" href="/">数学</a>&ensp;<a class="tag-link" href="/">积分</a>&ensp;<a class="tag-link" href="/">不定积分</a>&ensp;<a class="tag-link" href="/">椭圆曲线</a>&ensp;<a class="tag-link" href="/">椭圆积分</a>
+</div>
+</div>
+<div class="article-entry">
+<h1 class="article-title"><a class="article-title-text" href="/blog/2025-06-23_quadratic_pseudo-elliptic_integral.html">二次根号伪椭圆积分</a></h1>
+<div class="article-meta">
+<i class="fa-regular fa-calendar-days"></i>&ensp;2025-06-23&emsp;&emsp;
+<i class="fa-solid fa-tags"></i>&ensp;
+<a class="tag-link" href="/">数学</a>&ensp;<a class="tag-link" href="/">积分</a>&ensp;<a class="tag-link" href="/">不定积分</a>&ensp;<a class="tag-link" href="/">椭圆曲线</a>&ensp;<a class="tag-link" href="/">椭圆积分</a>
+</div>
+</div>
+<div class="article-entry">
+<h1 class="article-title"><a class="article-title-text" href="/blog/2025-06-23_test.html">测试</a></h1>
+<div class="article-meta">
+<i class="fa-regular fa-calendar-days"></i>&ensp;测试&emsp;&emsp;
+<i class="fa-solid fa-tags"></i>&ensp;
+<a class="tag-link" href="/">测试</a>&ensp;<a class="tag-link" href="/">测试</a>&ensp;<a class="tag-link" href="/">测试</a>
+</div>
+</div>
+<div class="article-entry">
+<h1 class="article-title"><a class="article-title-text" href="https://shuiyuan.sjtu.edu.cn">水源</a></h1>
+<div class="article-meta">
+<i class="fa-regular fa-calendar-days"></i>&ensp;水源&emsp;&emsp;
+<i class="fa-solid fa-tags"></i>&ensp;
+<a class="tag-link" href="/">水源</a>&ensp;<a class="tag-link" href="/">水源</a>&ensp;<a class="tag-link" href="/">水源</a>
+</div>
+</div>
+<div class="article-entry">
+<h1 class="article-title"><a class="article-title-text" href="javascript:alert('笨蛋')">笨蛋</a></h1>
+<div class="article-meta">
+<i class="fa-regular fa-calendar-days"></i>&ensp;笨蛋&emsp;&emsp;
+<i class="fa-solid fa-tags"></i>&ensp;
+<a class="tag-link" href="/">笨蛋</a>&ensp;<a class="tag-link" href="/">笨蛋</a>&ensp;<a class="tag-link" href="/">笨蛋</a>
+</div>
+</div></section>
+    </div>
+    
+    <!-- 页脚 -->
+    <footer class="footer">
+        <div class="footer-content">
+            <p>© 2025 这是什么我不造</p>
+        </div>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const articleEntries = document.querySelectorAll('.article-entry');
+            const navBar = document.querySelector('.nav-bar');
+            const heroSection = document.querySelector('.hero');
+            
+            // 滚动时文章列表淡入效果
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('visible');
+                    }
+                });
+            }, { threshold: 0.1 });
+            
+            articleEntries.forEach(entry => {
+                observer.observe(entry);
+            });
+            
+            // 导航栏滚动效果
+            window.addEventListener('scroll', () => {
+                const currentScrollY = window.scrollY;
+                const heroHeight = heroSection.offsetHeight;
+                const navThreshold = heroHeight * 1.0 - 60;
+                
+                // 计算是否应该显示导航栏
+                if (currentScrollY > navThreshold) {
+                    navBar.classList.add('visible');
+                    document.body.classList.add('has-nav');
+                } else {
+                    navBar.classList.remove('visible');
+                    document.body.classList.remove('has-nav');
+                }
+            });
+        });
+    </script>
+</body>
+</html>

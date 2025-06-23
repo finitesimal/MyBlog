@@ -1,0 +1,184 @@
+html {
+    font-size: 16px;
+}
+
+body {
+    font-family: "Noto Sans CJK";
+    font-weight: normal;
+    margin: 0;
+    padding-block: 0;
+    padding-inline: 24px;
+    color: #0f172a; /*slate-900*/
+}
+
+#main {
+    max-width: 720px;
+    margin: 0 auto;
+}
+
+#head {
+    margin-top: 4rem;
+    margin-bottom: 0;
+}
+
+#info {
+    margin-block: 1rem;
+    color: #334155; /*slate-700*/
+}
+
+#info > a {
+    color: #334155; /*slate-700*/
+    text-decoration: none;
+    border-bottom: 1px dashed transparent;
+}
+/*
+#info > a:hover {
+    color: #06b6d4;
+    border-bottom-color: #06b6d4;
+}
+*/
+#info > a:hover {
+    color: #14b8a6;
+    border-bottom-color: #14b8a6;
+}
+
+
+#article {
+    margin-block: 4rem;
+}
+
+#article > *:first-child{
+    margin-top: 0;
+}
+/*
+@font-face {
+    font-family: "ZSFT-du";
+    src: url("https://fontsapi.zeoseven.com/du/main.woff2") format('woff2'),
+        url("https://fontsapi-storage.zeoseven.com/du/main.woff2") format('woff2');
+    font-display: swap;
+}
+*/
+code {
+    /*font-family: "ZSFT-du";*/
+    font-family: "Cascadia Code";
+    font-weight: normal;
+}
+
+pre > code {
+    font-size: 0.8rem;
+    line-height: 1rem;
+}
+/*
+code {
+    background-color: #f1f5f9;
+    color: #334155;
+}
+*/
+.hljs {
+    background-color: #f1f5f9; /*slate-100*/
+}
+
+p {
+    margin-block: 1rem;
+    margin-inline: 0;
+    padding: 0;
+    line-height: 1.5rem;
+}
+
+blockquote {
+    margin-block: 1rem;
+    margin-inline-start: 0.25rem;
+    margin-inline-end: 0;
+    padding-block: 0.5rem;
+    padding-inline: 1rem;
+    box-shadow: -0.25rem 0 #cbd5e1; /*slate-300*/
+    background-color: #f1f5f9; /*slate-100*/
+    color: #334155; /*slate-700*/
+}
+blockquote > *:first-child {
+    margin-top: 0;
+}
+
+blockquote > *:last-child {
+    margin-bottom: 0;
+}
+/*
+a {
+    color: #0891b2;
+    transition: all 0.125s ease-in-out;
+    text-decoration: underline;
+}
+
+a:hover {
+    color: #06b6d4;
+}
+*/
+
+a {
+    color: #0d9488;
+    transition: all 0.125s ease-in-out;
+    text-decoration: underline;
+}
+
+a:hover {
+    color: #14b8a6;
+}
+
+
+h1, h2, h3, h4 {
+    font-weight: 600;
+    margin-top: 0;
+    margin-bottom: 0;
+    color: #1e293b; /*slate-800*/
+}
+
+h1 {
+    /*font-size: 2.25rem;*/
+    font-size: 2.5rem;
+    margin-top: 2rem;
+    margin-bottom: 1.5rem;
+}
+
+h2 {
+    font-size: 1.875rem;
+    /*font-size: 1.75rem;*/
+    margin-top: 1.75rem;
+    margin-bottom: 1.25rem;
+}
+
+h3 {
+    font-size: 1.5rem;
+    margin-top: 1.5rem;
+    margin-bottom: 1rem;
+}
+
+h4 {
+    font-size: 1.25rem;
+    margin-top: 1.25rem;
+    margin-bottom: 0.75rem;
+}
+
+
+@media (max-width: 768px) {
+    h1 { font-size: 2rem; }
+    h2 { font-size: 1.625rem; }
+    h3 { font-size: 1.375rem; }
+    h4 { font-size: 1.125rem; }
+}
+
+.katex-display {
+    overflow: auto hidden
+}
+
+.katex {
+    font-size: 1.1em;
+}
+
+hr {
+    margin-block: 1rem;
+    border: 1px solid #cbd5e1;
+}
+
+.giscus {
+    margin-block-start: 4rem;
+}
