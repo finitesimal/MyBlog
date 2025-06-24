@@ -1,4 +1,4 @@
-gen/
-blogsrc/
-template/
-test/
+__blog_gen/
+__blog_src/
+__blog_template/
+__blog_test/
