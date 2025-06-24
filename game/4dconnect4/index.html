@@ -1,0 +1,917 @@
+<!DOCTYPE html>
+<html>
+	<head>
+    <meta charset="utf-8" name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+		<link rel="icon" type="image/png" sizes="96x96" href="/common/img/favicon.png"/>
+		<title>4dconnect4</title>
+	</head>
+	<body>
+	  <style>
+	    body{
+	      background-color: #fff;
+	    }
+	    #canvas{
+	      position:fixed;
+	      width:100%;
+	      height:100%;
+	      left:0;
+	      top:0;
+	      background-color: #E7E7E7;
+	      display:none;
+	    }
+	    #canvas2{
+	      position: fixed;
+	      left:50%;
+	      top:50%;
+	      transform: translate(-50%,-50%);
+	      
+	    }
+	    @media screen and (max-aspect-ratio:3/4){
+	      #canvas2{
+	        width:100%;
+	      }
+	    }
+	    @media screen and (min-aspect-ratio:3/4){
+	      #canvas2{
+	        height:100%;
+	      }
+	    }
+	  </style>
+	  <canvas id="canvas" class="canvas"></canvas>
+	  <canvas id="canvas2" class="canvas" width="900" height="1200"></canvas>
+		<script>
+			let game4d=function(n){
+				this.n=n==3?3:2 //玩家数量
+				this.turn=1     //玩家顺序
+				//this.steps=0
+				this.map=     new Array(256).fill(0)     //.map(x=>new Array(4).fill(0).map(x=>new Array(4).fill(0).map(x=>new Array(4).fill(0))))
+				this.stepmap=[]
+				this.extramap=new Array(256).fill(0)
+				this.connect2list=[[],[],[]]
+				this.connect3list=[[],[],[]]
+				this.winner=0
+				this.winlist=[]
+				//this.last=-1
+				//this.extrachange=true
+				this.b1=false
+				this.b2=true
+				//this.savelist=[]
+			}
+			/*
+			game4d.prototype.export=function(){
+				let obj={
+					n:this.n,
+					turn:this.turn,
+					steps:this.steps,
+					winner:this.winner,
+					map:this.map,
+					extramap:this.extramap,
+					connect2list:this.connect2list,
+					connect3list:this.connect3list,
+					winlist:this.winlist,
+					last:this.last,
+					b1:this.b1,
+					b2:this.b2,
+					savelist:this.savelist
+				}
+				let blob=new Blob([JSON.stringify(obj)],{type:"text/plain"})
+				let url=URL.createObjectURL(blob)
+				let a=document.createElement("a")
+				a.download="save_"+Date.now()+".txt"
+				a.href=url
+				a.click()
+				URL.revokeObjectURL(url)
+			}
+			game4d.prototype.save=function(a){
+				let obj={
+					turn:this.turn,
+					steps:this.steps,
+					winner:this.winner,
+					map:this.map,
+					connect2list:this.connect2list,
+					connect3list:this.connect3list,
+					winlist:this.winlist,
+					last:this.last
+				}
+				this.savelist.push(JSON.stringify(obj))
+				this.savelist=this.savelist.slice(-a)
+			}
+			game4d.prototype.retract=function(){
+				if(this.savelist.length>0){
+					let obj=JSON.parse(this.savelist.pop())
+					this.turn=obj.turn
+					this.steps=obj.steps
+					this.winner=obj.winner
+					this.map=obj.map
+					this.connect2list=obj.connect2list
+					this.connect3list=obj.connect3list
+					this.winlist=obj.winlist
+					this.last=obj.last
+					this.makeextra()
+				}
+			}
+			*/
+			game4d.prototype.export=function(){
+			  let list=this.stepmap.filter(a=>a>=0 && a<=255)
+			  let n=0
+			  if(list.length==0){
+			    n=this.stepmap.length
+			  }else{
+			    n=this.stepmap.indexOf(list[0])
+			    list=this.stepmap.slice(n)
+			    list=list.map(a=>(a>=0 && a<=255)?a:list[0])
+			  }
+			  list=[(this.n<<2)+(this.b1?2:0)+(this.b2?1:0),n].concat(list)
+			  let str=window.btoa(list.map(x=>String.fromCharCode(x)).join(""))
+			  let changelist=[["+","/","="],["-","_",""]]
+			  let exp=str.split("").map(x=>changelist[0].indexOf(x)==-1?x:changelist[1][changelist[0].indexOf(x)]).join("")
+        let i=document.createElement("input")
+        document.body.appendChild(i)
+        i.value=exp
+        i.readonly="true"
+        i.focus()
+        i.setSelectionRange(0,i.value.length)
+        document.execCommand("copy")
+        document.body.removeChild(i)
+			}
+			game4d.prototype.import=function(s){
+			  let changelist=[["+","/","="],["-","_",""]]
+			  let list=window.atob(s.split("").map(x=>changelist[1].indexOf(x)==-1?x:changelist[0][changelist[1].indexOf(x)]).join("")).split("").map(x=>x.charCodeAt(0))
+			  //console.log(list[0]&2)
+			  this.n=list[0]>>>2
+			  this.n=this.n==3?3:2
+			  this.b1=(list[0]&2)==2
+			  this.b2=(list[0]&1)==1
+			  
+			  let n=list[1]
+			  list=list.slice(2)
+			  list=list.map((a,b)=>list.indexOf(a)==b?a:-1)
+			  list=new Array(n).fill(-1).concat(list)
+			  this.stepmap=list
+			  this.turn=this.stepmap.length%this.n+1
+			  this.map=new Array(256).fill(0)
+			  this.stepmap.map((p,a)=>{
+			    if(p>=0){
+			      this.map[p]=a%this.n+1
+			    }
+			  })
+			  let o=this.findall()
+			  this.connect2list=o.connect2list
+	      this.connect3list=o.connect3list
+		    this.winner=o.winner
+		    this.winlist=o.winlist
+		    this.makeextra()
+			}
+			game4d.prototype.retract=function(){
+			  let a=this.stepmap.pop()
+			  this.turn=this.stepmap.length%this.n+1
+			  if(a>=0){
+			    this.map[a]=0
+			    let o=this.findall()
+			    this.connect2list=o.connect2list
+			    this.connect3list=o.connect3list
+			    this.winner=o.winner
+			    this.winlist=o.winlist
+			    this.makeextra()
+			  }
+			}
+			game4d.prototype.findall=function(){
+        let c2=[[],[],[]]
+	  		let c3=[[],[],[]]
+	  		let c4=[]
+	  		let winner=0
+	  		let checked=[]
+		  	let ptoa=(a,b,c,d)=>a*64+b*16+c*4+d
+  			let cl=[
+	  		[0,0,0,0],
+		  	[1,1,1,1],
+			  [2,2,2,2],
+  			[3,3,3,3],
+	  		[0,1,2,3],
+		  	[3,2,1,0]]
+			  for(let i=0;i<6;i++){
+		      for(let j=0;j<6;j++){
+		        for(let k=0;k<6;k++){
+			        for(let l=0;l<6;l++){
+  				      let listx=new Array(4).fill(0).map((aa,a)=>ptoa(cl[i][a],cl[j][a],cl[k][a],cl[l][a]))
+  				      let listn=listx.sort((a,b)=>a-b).reduce((a,b)=>a*256+b,0)
+			          if((!(i<4 && j<4 && k<4 && l<4)) && checked.indexOf(listn)==-1){
+			            checked.push(listn)
+  				        let list=listx.map((a)=>[a,this.map[a]])
+	  			        let list0=list.filter(a=>a[1]==0)
+		  		        let list1=list.filter(a=>a[1]==1)
+			   	        let list2=list.filter(a=>a[1]==2)
+				          let list3=list.filter(a=>a[1]==3)
+				          if(list1.length==4){
+				            winner=1
+				            c4=listx
+				          }
+				          if(list2.length==4){
+				            winner=2
+				            c4=listx
+				          }
+				          if(list3.length==4){
+				            winner=3
+				            c4=listx
+				          }
+				          if(list0.length==2){
+				            if(list1.length==2){
+				              c2[0].push([list0.map(a=>a[0]),listx])
+  				          }else if(list2.length==2){
+	  			            c2[1].push([list0.map(a=>a[0]),listx])
+		  		          }else if(list3.length==2){
+			  	            c2[2].push([list0.map(a=>a[0]),listx])
+				            }
+				          }else if(list0.length==1){
+				            if(list1.length==3){
+		                  c3[0].push([list0[0][0],listx])
+  		              }else if(list2.length==3){
+	  			            c3[1].push([list0[0][0],listx])
+		  		          }else if(list3.length==3){
+			  	            c3[2].push([list0[0][0],listx])
+			              }
+		              }
+				        }
+				      }
+		        }
+		      }
+			  }
+			  
+			  //let c2x=c2.map(a=>a.map(aa=>aa[0][0]*256+aa[0][1]))
+			  //c2=c2.map((a,a1)=>a.filter((aa,aa1)=>aa1==c2x[a1].indexOf(aa[0][0]*256+aa[0][1])))
+			  //console.log(JSON.stringify(c3))
+			  //console.log(JSON.stringify(this.connect3list))
+			  //console.log(JSON.stringify(checked))
+			  //console.log(this.connect2list[0].map(a=>a[0].sort((aaa,bbb)=>a-b).reduce((aaa,bbb)=>aaa*256+bbb,0)).sort((a,b)=>a-b).join(" ")==c2[0].map(a=>a[0].sort((aaa,bbb)=>a-b).reduce((aaa,bbb)=>aaa*256+bbb,0)).sort((a,b)=>a-b).join(""))
+			  return{connect2list:c2,connect3list:c3,winner:winner,winlist:c4}
+			}
+			game4d.prototype.check2=function(p,color){
+				let arr=[]
+				let x=p>>6
+				let y=p>>4 & 3
+				let z=p>>2 & 3
+				let w=p    & 3
+				for(let i=0;i<256;i++){
+					let a=i>>6
+					let b=i>>4 & 3
+					let c=i>>2 & 3
+					let d=i    & 3
+					if(this.map[i]==color && i!=p){
+						let range=[0,6,12,18]
+						let lam=[-12,-6,-3,2,3,4,9,12,18]
+						let result=lam.map(k=>[(a*k+x*(6-k)), (b*k+y*(6-k)), (c*k+z*(6-k)), (d*k+w*(6-k))])
+						.filter((k)=>range.indexOf(k[0])>=0 && range.indexOf(k[1])>=0 && range.indexOf(k[2])>=0 && range.indexOf(k[3])>=0 /*&& this.map[(k[0]*64+k[1]*16+k[2]*4+k[3])/6]==0*/)
+						.map(k=>(k[0]*64+k[1]*16+k[2]*4+k[3])/6)
+						.filter(k=>this.map[k]==0)
+						if(result.length==2){
+							arr.push([result,result.concat([p,i])])
+						}
+					}
+				}
+				return arr
+			}
+			game4d.prototype.put=function(p){
+				//using temp var "a"
+				/*
+				let x=p>>6
+				let y=p>>4 & 3
+				let z=p>>2 & 3
+				let w=p    & 3
+				*/
+			
+				//this.save(3)
+				this.map[p]=this.turn
+				if(this.connect3list[this.turn-1].map(a=>a[0]).indexOf(p)>=0){
+					this.win(this.turn)
+					this.winlist=this.connect3list[this.turn-1].filter(a=>a[0]==p)[0][1]
+				}
+				this.connect3list=this.connect3list.map(k=>k.filter(kk=>kk[0]!=p))
+				this.connect2list[this.turn-1].map(k=>{
+					if(k[0][0]==p){
+						this.connect3list[this.turn-1].push([k[0][1],k[1]])
+					}
+					if(k[0][1]==p){
+						this.connect3list[this.turn-1].push([k[0][0],k[1]])
+					}
+				})
+				this.connect2list=this.connect2list.map(k=>k.filter(kk=>kk[0][0]!=p && kk[0][1]!=p))
+				this.connect2list[this.turn-1]=this.connect2list[this.turn-1].concat(this.check2(p,this.turn))
+				
+				this.makeextra()
+				
+				/*
+				window.z=window.z||[]
+				let aaa=this.extramap.join(",")
+				let bbb=this.connect3list.length
+				let aa=this.findall()
+				this.connect2list=aa.connect2list
+				this.connect3list=aa.connect3list
+				this.makeextra()
+				window.z.push(this.extramap.join(",")==aaa && bbb==this.connect3list.length)
+				console.log(window.z.every(a=>a))
+				*/
+				//let T=Date.now()
+				//this.findall()
+				//console.log(Date.now()-T)
+				//this.last=p
+				this.stepmap.push(p)
+				this.turn=this.stepmap.length % this.n +1
+				//this.steps++
+				//this.extrachange=false
+				//console.log(this.connect2list[1])
+				//console.log(this.connect3list[0])
+				//console.log(this.extramap)
+			}
+			game4d.prototype.skip=function(){
+				//this.save(3)
+				//this.last=-1
+				//this.steps++
+				if(this.winner==0){
+				  this.stepmap.push(-1)
+				}
+				if(this.stepmap.length>=this.n && this.stepmap.slice(-this.n).every(a=>a==-1)){
+				  for(let i=0;i<this.n;i++){
+				    this.stepmap.pop()
+				  }
+				}
+				this.turn=this.turn % this.n +1
+			}
+			game4d.prototype.makeextra=function(){
+				this.extramap=new Array(256).fill(0)
+				this.connect2list.map((k,k1)=>k.map(kk=>{
+					this.extramap[kk[0][0]]=this.extramap[kk[0][0]]|(1<<k1)
+					this.extramap[kk[0][1]]=this.extramap[kk[0][1]]|(1<<k1)
+				}))
+				this.connect3list.map((k,k1)=>k.map(kk=>{
+					this.extramap[kk[0]]=this.extramap[kk[0]]|(1<<(k1+3))
+				}))
+			}
+			game4d.prototype.draw=function(cvs,b1,b2,scale){
+				/*
+				if(!this.extrachange){
+					this.makeextra(this.b1,this.b2)
+					this.extrachange=true
+				}
+				*/
+				let cxt=cvs.getContext("2d")
+			  let l1=48 *scale
+			  let l2=200*scale
+			  let w1=40 *scale
+			  let lw1=2 *scale
+			  let lw2=2 *scale
+			  let r1=15 *scale
+			  let r2=15 *scale
+			  let r3=7.5*scale
+			     b1+=8  *scale
+			     b2+=8  *scale
+			  let color=["#d00","#0c0","#00d"]
+			  let color2=["#f66","#6e6","#66f"]
+			  let color3=["#fcc","#cec","#ccf"]
+			  //let color2=["#f00","#0f0","#ff0","#00f","#f0f","#0ff","#fff"]
+			  //cxt.fillStyle="#ddd"
+			  //cxt.fillRect(0,0,l2*4,l2*4)
+			  for(let i=0;i<256;i++){
+			    let circle1=(this.b1||this.b2)?((this.b1?(this.extramap[i]&7):0)|(true?(this.extramap[i]>>3):0)):0
+			    let circle2=this.b2?(this.extramap[i]>>3):0
+			    let a=i>>6
+					let b=i>>4 & 3
+					let c=i>>2 & 3
+					let d=i    & 3
+					cxt.fillStyle=((a+b)&1)?"#F5F5F5":"#FFF"
+					cxt.strokeStyle="#B7B7B7"
+					if(this.winlist.indexOf(i)>=0){
+					  cxt.fillStyle=color3[this.winner-1]
+					  cxt.strokeStyle=color[this.winner-1]
+					}
+					cxt.lineWidth=lw1
+					cxt.fillRect(a*l2+c*l1+b1,b*l2+d*l1+b2,w1,w1)
+					cxt.strokeRect(a*l2+c*l1+b1,b*l2+d*l1+b2,w1,w1)
+					if(this.stepmap.length>0 && this.stepmap[this.stepmap.length-1]==i){
+					  cxt.strokeStyle="#999"//color[(this.turn+this.n-2)%this.n]
+					  let x=a*l2+c*l1+b1-3*scale
+					  let y=b*l2+d*l1+b2-3*scale
+					  let w=w1+6*scale
+					  cxt.beginPath()
+					  cxt.moveTo(x,y+0.3*w)
+					  cxt.lineTo(x,y)
+					  cxt.lineTo(x+0.3*w,y)
+					  cxt.moveTo(x+0.7*w,y)
+					  cxt.lineTo(x+w,y)
+					  cxt.lineTo(x+w,y+0.3*w)
+					  cxt.moveTo(x+w,y+0.7*w)
+					  cxt.lineTo(x+w,y+w)
+					  cxt.lineTo(x+0.7*w,y+w)
+					  cxt.moveTo(x+0.3*w,y+w)
+					  cxt.lineTo(x,y+w)
+					  cxt.lineTo(x,y+0.7*w)
+					  cxt.stroke()
+					}
+					if(this.map[i]!=0){
+					  cxt.beginPath();
+            cxt.arc(a*l2+c*l1+w1/2+b1,b*l2+d*l1+w1/2+b2, r1, 0, Math.PI*2, true);
+            cxt.closePath();
+            cxt.fillStyle = color2[this.map[i]-1];
+            //cxt.shadowColor="#77777777"
+				    //cxt.shadowBlur=5*scale
+				    //cxt.shadowOffsetX=5*scale
+				    //cxt.shadowOffsetY=5*scale
+            cxt.fill();
+            //cxt.shadowColor="#00000000"
+            cxt.beginPath();
+            cxt.arc(a*l2+c*l1+w1/2+b1,b*l2+d*l1+w1/2+b2, r1, 0, Math.PI*2, true);
+            cxt.closePath();
+            cxt.strokeStyle = color[this.map[i]-1];
+            cxt.stroke();
+					}else if(circle1>0){
+					  let list1=[]
+					  if((circle1 & 1)==1){list1.push(0)}
+					  if((circle1 & 2)==2){list1.push(1)}
+					  if((circle1 & 4)==4){list1.push(2)}
+					  
+					  cxt.lineWidth=lw2
+					  for(let j=0;j<list1.length;j++){
+					    cxt.beginPath();
+              cxt.arc(a*l2+c*l1+w1/2+b1,b*l2+d*l1+w1/2+b2, r2, Math.PI*2*(j/list1.length-1/4),Math.PI*2*((j+1)/list1.length-1/4), false);
+              //cxt.closePath();
+              cxt.strokeStyle = color[list1[j]]
+              cxt.stroke()
+					  }
+					  
+					  if(circle2>0){
+					    let list2=[]
+  					  if((circle2 & 1)==1){list2.push(0)}
+	  				  if((circle2 & 2)==2){list2.push(1)}
+		  			  if((circle2 & 4)==4){list2.push(2)}
+				  	  cxt.lineWidth=lw2
+					    for(let j=0;j<list2.length;j++){
+					      cxt.beginPath();
+                cxt.arc(a*l2+c*l1+w1/2+b1,b*l2+d*l1+w1/2+b2, r3, Math.PI*2*(j/list2.length-1/4),Math.PI*2*((j+1)/list2.length-1/4), false);
+                //cxt.closePath();
+                cxt.strokeStyle = color[list2[j]]
+                cxt.stroke()
+					    }
+					  }
+					}
+			  }
+			}
+			game4d.prototype.win=function(n){
+				this.winner=n
+			}
+		</script>
+		<script>
+			/*
+			function newtouch(cvobj, funcmov, funcend) {
+        var tch = (function() {
+          var t = new Object();
+          t.im = [];
+          t.ip = [];
+          t.np = [];
+          return t
+        }());
+        var rtnobj = (function() {
+          var t = new Object();
+          t.dlt = function() {
+            cvobj.removeEventListener("touchstart", st);
+            cvobj.removeEventListener("touchmove", mov);
+            cvobj.removeEventListener("touchend", ed);
+          }
+          return t
+        }());
+        var dlist = [0, 0, 1];
+
+        function st(e) {
+          var elength = e.touches.length;
+          if(tch.im.length != elength) {
+            tch.im = new Array(elength)
+              .fill(0)
+              .map((b, a) => [e.touches[a].clientX, e.touches[a].clientY]);
+            tch.ip = new Array(3)
+              .fill(0)
+              .map((b, a) => tch.np[a] || dlist[a]);
+            
+            tch.np = new Array(3)
+              .fill(0)
+              .map((b, a) => tch.np[a] || dlist[a]);
+            
+          }
+        }
+
+        function mov(e) {
+          var elength = e.touches.length;
+          if(tch.im.length != elength) {
+            tch.im = new Array(elength)
+              .fill(0)
+              .map((b, a) => [e.touches[a].clientX, e.touches[a].clientY]);
+            tch.ip = new Array(3)
+              .fill(0)
+              .map((b, a) => tch.np[a] || dlist[a]);
+          }
+          if(elength == 1) {
+            tch.np = [tch.ip[0] + (e.touches[0].clientX - tch.im[0][0]) / cvobj.clientWidth, tch.ip[1] + (e.touches[0].clientY - tch.im[0][1]) / cvobj.clientHeight, tch.ip[2]]
+
+          } else if(elength == 2) {
+            let sc1 = Math.pow((Math.pow(e.touches[0].clientX - e.touches[1].clientX, 2) + Math.pow(e.touches[0].clientY - e.touches[1].clientY, 2)) / (Math.pow(tch.im[0][0] - tch.im[1][0], 2) + Math.pow(tch.im[0][1] - tch.im[1][1], 2)), 1 / 2);
+            let im1 = [(tch.im[0][0] + tch.im[1][0]) / cvobj.clientWidth / 2, (tch.im[0][1] + tch.im[1][1]) / cvobj.clientHeight / 2];
+            tch.np = [(e.touches[0].clientX + e.touches[1].clientX) / cvobj.clientWidth / 2 - sc1 * (im1[0] - tch.ip[0]), (e.touches[0].clientY + e.touches[1].clientY) / cvobj.clientHeight / 2 - sc1 * (im1[1] - tch.ip[1]), sc1 * tch.ip[2]];
+          } else {
+          
+          }
+          funcmov(tch.np[0], tch.np[1], tch.np[2]);
+          e.preventDefault();
+        }
+
+        function ed(e) {
+          var elength = e.touches.length;
+          if(tch.im.length != elength && elength > 0) {
+            tch.im =new Array(elength)
+              .fill(0)
+              .map((b, a) => [e.touches[a].clientX, e.touches[a].clientY]);
+            
+            tch.ip = new Array(3)
+              .fill(0)
+              .map((b, a) => tch.np[a] || dlist[a]);
+          }
+          if(elength == 0) {
+            tch.im = [];
+            tch.ip = [];
+            funcend(tch.np[0], tch.np[1], tch.np[2]);
+            tch.np = [];
+          }
+        }
+
+        cvobj.addEventListener("touchstart", st);
+        cvobj.addEventListener("touchmove", mov);
+        cvobj.addEventListener("touchend", ed);
+
+        return rtnobj
+      }
+			*/
+			/*
+			function ptox(a,b,c,d){
+				return a*64 + b*16 + c*4 + d
+			}
+			function cvsresize(cvs){
+			  console.log([cvs.clientWidth,cvs.clientHeight])
+			  let w=parseInt(window.innerWidth)
+			  let h=parseInt(window.innerHeight)
+			  console.log([w,h])
+			  let s=Math.sqrt(2000000/(w*h))
+			  cvs.width=Math.round(w*s)
+			  cvs.height=Math.round(h*s)
+			}
+			*/
+			/*
+			let a=new game4d(3)
+			a.put(ptox(0,0,0,0))
+			a.put(ptox(2,0,0,0))
+			a.put(ptox(2,2,2,2))
+			a.put(ptox(3,0,3,0))
+			a.put(ptox(2,0,3,0))
+			a.put(ptox(2,1,2,1))
+			a.put(ptox(1,0,1,0))
+			a.put(ptox(2,1,2,2))
+			a.put(ptox(1,2,1,2))
+			a.draw(document.getElementById("canvas").getContext("2d"),2)
+			console.log(a.map)
+			*/
+			/*
+			window.onload=window.onresize=()=>{
+			  cvsresize(document.getElementById("canvas"))
+			  a.draw(document.getElementById("canvas").getContext("2d"),0,0,2)
+			}
+			*/
+			/*
+			let aaa=0
+			let bbb=0
+			let ccc=2
+      let canvas=document.getElementById("canvas")
+      newtouch(canvas,
+      (aa,bb,cc)=>{
+        canvas.width=canvas.width
+        a.draw(canvas.getContext("2d"),(aaa*cc+aa)*canvas.width,(bbb*cc+bb)*canvas.height,cc*ccc)
+      },
+      ()=>{
+        aaa=aaa*cc+aa
+        bbb=bbb*cc+bb
+        ccc*=cc
+      }
+      )
+			*/
+		</script>
+		<script>
+function newtouch(cvobj,funcmov,funcend){
+var tch=(function(){var t=new Object();t.im=[];t.ip=[];t.np=[];return t}());
+var rtnobj=(function(){
+var t=new Object();
+t.dlt=function(){
+cvobj.removeEventListener("touchstart",st);
+cvobj.removeEventListener("touchmove",mov);
+cvobj.removeEventListener("touchend",ed);
+}
+return t
+}());
+var dlist=[0,0,1];
+
+function st(e){
+var elength=e.touches.length;
+if(tch.im.length != elength){
+tch.im=new Array(elength).fill(0).map((b,a)=>[e.touches[a].clientX,e.touches[a].clientY]);
+tch.ip=new Array(3).fill(0).map((b,a)=>tch.np[a]||dlist[a]);
+tch.np=new Array(3).fill(0).map((b,a)=>tch.np[a]||dlist[a]);
+
+}
+}
+
+function mov(e){
+var elength=e.touches.length;
+if(tch.im.length != elength){
+tch.im=new Array(elength).fill(0).map((b,a)=>[e.touches[a].clientX,e.touches[a].clientY]);
+tch.ip=new Array(3).fill(0).map((b,a)=>tch.np[a]||dlist[a]);
+}
+if(elength==1){
+tch.np=[tch.ip[0]+(e.touches[0].clientX-tch.im[0][0])/cvobj.clientWidth,tch.ip[1]+(e.touches[0].clientY-tch.im[0][1])/cvobj.clientHeight,tch.ip[2]]
+
+}else if(elength==2){
+let sc1=Math.pow((Math.pow(e.touches[0].clientX-e.touches[1].clientX,2)+Math.pow(e.touches[0].clientY-e.touches[1].clientY,2))/(Math.pow(tch.im[0][0]-tch.im[1][0],2)+Math.pow(tch.im[0][1]-tch.im[1][1],2)),1/2);
+let im1=[(tch.im[0][0]+tch.im[1][0])/cvobj.clientWidth/2,(tch.im[0][1]+tch.im[1][1])/cvobj.clientHeight/2];
+tch.np=[(e.touches[0].clientX+e.touches[1].clientX)/cvobj.clientWidth/2-sc1*(im1[0]-tch.ip[0]),(e.touches[0].clientY+e.touches[1].clientY)/cvobj.clientHeight/2-sc1*(im1[1]-tch.ip[1]),sc1*tch.ip[2]];
+}else{
+/*do3*/
+}
+funcmov(tch.np[0],tch.np[1],tch.np[2]);
+e.preventDefault();
+}
+
+function ed(e){
+var elength=e.touches.length;
+if(tch.im.length != elength && elength>0){
+tch.im=new Array(elength).fill(0).map((b,a)=>[e.touches[a].clientX,e.touches[a].clientY]);
+tch.ip=new Array(3).fill(0).map((b,a)=>tch.np[a]||dlist[a]);
+}
+if(elength==0){
+tch.im=[];
+tch.ip=[];
+funcend(tch.np[0],tch.np[1],tch.np[2]);
+tch.np=[];
+}
+}
+
+cvobj.addEventListener("touchstart",st);
+cvobj.addEventListener("touchmove",mov);
+cvobj.addEventListener("touchend",ed);
+
+return rtnobj
+}
+		</script>
+		<script>
+			function newgame(n){
+			  let bslist=[80,120,50]
+				let A=0
+				let B=0
+				let C=1
+				let cvs=document.getElementById("canvas")
+				let cxt=cvs.getContext("2d")
+				let ifsettings=true
+				let game=new game4d(n)
+				function draw(a,b,c){
+				  cvs.width=cvs.width
+					let color=["#d00","#0c0","#00d"]
+					game.draw(cvs,a||A,b||B,c||C)
+					if(game.winner==0){
+						circle(bslist[0],bslist[0]+0*bslist[1],bslist[2],game.stepmap.length+1,color[game.turn-1])
+					}else{
+						circle(bslist[0],bslist[0]+0*bslist[1],bslist[2],"赢",color[game.winner-1])
+					}
+					if(ifsettings){
+  					circle(bslist[0],bslist[0]+1*bslist[1],bslist[2],"寻2",game.b1?"#999":"#ccc")
+	  				circle(bslist[0],bslist[0]+2*bslist[1],bslist[2],"寻3",game.b2?"#999":"#ccc")
+		  			circle(bslist[0],bslist[0]+3*bslist[1],bslist[2],"弃")
+			  		circle(bslist[0],bslist[0]+4*bslist[1],bslist[2],"悔",game.stepmap.length>0?"#999":"#ccc")
+				  	circle(bslist[0],bslist[0]+5*bslist[1],bslist[2],"存")
+					}
+				}
+				function canvasresize(){
+					let w=parseInt(window.innerWidth)
+					let h=parseInt(window.innerHeight)
+					let s=Math.sqrt(2000000/(w*h))
+					cvs.width=Math.round(w*s)
+					cvs.height=Math.round(h*s)
+				}
+				function boardresize(){
+					let w=cvs.width
+					let h=cvs.height
+					if(w>h){
+						A=((w-h)/2)|0
+						B=0
+						C=h/800
+					}else{
+						A=0
+						B=((h-w)/2)|0
+						C=w/800
+					}
+					A+=40*C
+					B+=40*C
+					C*=0.9
+				}
+				function circle(x,y,r,w,tc){
+				  //cxt.shadowColor="#77777777"
+				  //cxt.shadowBlur=10
+				  //cxt.shadowOffsetX=10
+				  //cxt.shadowOffsetY=10
+					cxt.lineWidth=4
+					cxt.beginPath()
+					cxt.arc(x,y, r, 0, Math.PI*2, true)
+					cxt.closePath()
+					cxt.fillStyle = "#fff"
+					cxt.fill()
+					//cxt.shadowColor="#00000000"
+					cxt.beginPath()
+					cxt.arc(x,y, r, 0, Math.PI*2, true)
+					cxt.closePath()
+					cxt.strokeStyle="#B7B7B7"
+					cxt.stroke()
+					cxt.fillStyle = tc||"#999"
+					cxt.font=Math.round(r*1).toString()+"px sans-serif"
+					cxt.textAlign="center"
+					cxt.textBaseline="middle"
+					cxt.fillText(w,x,y,2*r)
+				}
+				window.onresize=()=>{
+					canvasresize()
+					boardresize()
+					draw()
+				}
+				cvs.addEventListener("dblclick",(e)=>{
+				  let event=e||window.event
+				  let x=event.clientX/cvs.clientWidth *cvs.width 
+					let y=event.clientY/cvs.clientHeight*cvs.height
+					if(Math.abs(x-bslist[0])<bslist[2] && Math.abs(y-bslist[0]-0*bslist[1])<bslist[2]){
+				    boardresize()
+				    draw()
+				  }
+				})
+				cvs.addEventListener("click",(e)=>{
+					let event=e||window.event
+					//let x=(event.clientX/cvs.clientWidth *cvs.width -A)/C
+					//let y=(event.clientY/cvs.clientHeight*cvs.height-B)/C
+					let x=event.clientX/cvs.clientWidth *cvs.width 
+					let y=event.clientY/cvs.clientHeight*cvs.height
+					if(Math.abs(x-bslist[0])<bslist[2] && Math.abs(y-bslist[0]-0*bslist[1])<bslist[2]){
+				    ifsettings= !ifsettings
+				    draw()
+				  }else if(ifsettings && Math.abs(x-bslist[0])<bslist[2] && Math.abs(y-bslist[0]-1*bslist[1])<bslist[2]){
+						game.b1=!game.b1
+						draw()
+					}else if(ifsettings && Math.abs(x-bslist[0])<bslist[2] && Math.abs(y-bslist[0]-2*bslist[1])<bslist[2]){
+						game.b2=!game.b2
+						draw()
+					}else if(ifsettings && Math.abs(x-bslist[0])<bslist[2] && Math.abs(y-bslist[0]-3*bslist[1])<bslist[2]){
+						game.skip()
+						draw()
+					}else if(ifsettings && Math.abs(x-bslist[0])<bslist[2] && Math.abs(y-bslist[0]-4*bslist[1])<bslist[2]){
+						game.retract()
+						draw()
+					}else if(ifsettings && Math.abs(x-bslist[0])<bslist[2] && Math.abs(y-bslist[0]-5*bslist[1])<bslist[2]){
+						game.export()
+					}else{
+						x=(x-A)/C
+						y=(y-B)/C
+						let a=Math.floor(x/200)
+						let b=Math.floor(y/200)
+						let c=Math.floor((x-4-a*200)/48)
+						let d=Math.floor((y-4-b*200)/48)
+						if([a,b,c,d].every(x=>(x>=0)
+						&&(x<=3))
+						&& x>a*200+c*48+4+4
+						&& y>b*200+d*48+4+4
+						&& x<a*200+c*48+4+44
+						&& y<b*200+d*48+4+44
+						&& game.map[a*64+b*16+c*4+d]==0
+						&& game.winner==0
+						){
+						  //let T=Date.now()
+							game.put(a*64+b*16+c*4+d)
+							draw()
+							//console.log(Date.now()-T)
+						}
+					}
+				})
+				newtouch(cvs,(a,b,c)=>{
+				  //let T=Date.now()
+				  draw((A*c+a*cvs.width),(B*c+b*cvs.height),C*c)
+				  //console.log(Date.now()-T)
+				},(a,b,c)=>{
+				  
+				  A=A*c+a*cvs.width
+				  B=B*c+b*cvs.height
+				  C=C*c
+				  
+				  draw()
+				})
+				canvasresize()
+				boardresize()
+				draw()
+				return {import:(s)=>{game.import(s);boardresize();draw()}}
+			}
+			//newgame(3)
+		</script>
+		<script>
+		  function start(){
+		    let game=newgame(3)
+		    let cvs=document.getElementById("canvas")
+		    let cvs2=document.getElementById("canvas2")
+		    let cxt2=cvs2.getContext("2d")
+		    let img1=new Image()
+		    let img2=new Image()
+		    /*
+		    cvs2.style.position="fixed"
+		    cvs2.style.display="block"
+		    function resize2(){
+		      let w=0
+		      let h=0
+		      let l=0
+		      let t=0
+		      if(window.clientWidth/window.clientHeight>3/4){
+		        h=window.clientHeight
+		        t=0
+		        w=h*0.75
+		        l=(window.clientWidth-w)/2
+		      }else{
+		        w=window.clientWidth
+		        l=0
+		        h=w/0.75
+		        t=(window.clientHeight-h)/2
+		      
+		      }
+		      cvs2.style.width=Math.round(w)+"px"
+		      cvs2.style.height=Math.round(h)+"px"
+		      cvs2.style.left=Math.round(l)+"px"
+		      cvs2.style.top=Math.round(t)+"px"
+		    }
+		    */
+		    cvs2.style.backgroundColor="#fff"
+		    function draw(){
+		      cxt2.globalAlpha=0.75
+		      cxt2.drawImage(img1,75,50,728*0.66,460*0.66)
+		      cxt2.drawImage(img2,60,210)
+		      cxt2.globalAlpha=1
+		      cxt2.fillStyle="#fafafa"
+		      cxt2.strokeStyle="#7f7f7f"
+		      cxt2.lineWidth=4
+		      cxt2.fillRect(200,500,500,100)
+		      cxt2.fillRect(200,700,500,100)
+		      cxt2.fillRect(200,900,500,100)
+		      cxt2.strokeRect(200,500,500,100)
+		      cxt2.strokeRect(200,700,500,100)
+		      cxt2.strokeRect(200,900,500,100)
+		      cxt2.font="50px sans-serif"
+		      cxt2.textAlign="center"
+		      cxt2.textBaseline="middle"
+		      cxt2.fillStyle="#933"
+		      cxt2.fillText("双人对战",450,550,500)
+		      cxt2.fillStyle="#383"
+		      cxt2.fillText("三人混战",450,750,500)
+		      cxt2.fillStyle="#33a"
+		      cxt2.fillText("导入存档",450,950,500)
+		      cxt2.fillStyle="#666"
+		      cxt2.font="30px sans-serif"
+		      //cxt2.textBaseline="bottom"
+		      cxt2.fillText("v0.1",450,1100)
+		    }
+		    cvs2.addEventListener("click",(e)=>{
+		      let event=e||window.event
+		      let x=event.offsetX/cvs2.clientWidth*900
+		      let y=event.offsetY/cvs2.clientHeight*1200
+		      if(Math.abs(x-450)<250 && Math.abs(y-550)<50){
+		        game.import("CQA")
+		        cvs.style.display="block"
+		        cvs2.style.display="none"
+		      }else if(Math.abs(x-450)<250 && Math.abs(y-750)<50){
+		        game.import("DQA")
+		        cvs.style.display="block"
+		        cvs2.style.display="none"
+		      }else if(Math.abs(x-450)<250 && Math.abs(y-950)<50){
+		        let s=prompt("请输入存档内容").trim()
+		        if(s){
+		          try{
+		            game.import(s)
+		            cvs.style.display="block"
+		            cvs2.style.display="none"
+		          }catch(e){
+		            alert("存档有误")
+		          }
+		        }
+		      }
+		    })
+		    img1.src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAtgAAAHMBAMAAAAdUsImAAAAG1BMVEX///+/v78fHx/f399fX1+fn59/f38/Pz8AAABvI7hcAAAAAXRSTlMAQObYZgAAA3RJREFUeJzt1z1OG1EYhlGq1NkCYgMsiTJlJHaACMmyE8xPMgrYnrH94Duc098R36O3MBcXAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACcuV8T3xd84dvkCz+2fH2hq+NcegYGiH13fZxTP94Asdcz7RFir2baI8RezbSHiL2WaQ8Rey3THiP2SqY9RuyVTHuQ2OuY9iCx1zHtUWKvYtqjxF7FtIeJvYZpDxN7DdMeJ/YKpj1O7BVMe6DY4097oNjjT3uk2MNPe6TYw097qNijT3uo2KNPu4x9+NfvF3zhjIgdEjskdkjskNghsUNih8QOiR0SOyR2SOyQ2CGxQ2KHxA6JHRI7JHZI7JDYIbFDYofEDokdEjskdkjskNghsUNih8QOiR0SOyR2SOyQ2CGxQ2KHxA6JHRI7JHZI7JDYIbFDYofEDokdEjskdkjskNghsUNih8QOiR0SOyR2SOyQ2CGxQ2KHxA6JHRI7JHZI7JDYIbFDYofEDokdEjskdkjskNghsUNih8QOiR0SOyR2SOyQ2KHpMYcTe4svYoem14h9UkeetthbTc8R+6SOO22xt5veM9fD9LnY2x007ftrsWeZHjTL3Vf/1MxzwLRv/Ac51/SiGW7/eyz2Lkunffn4WOyZpift6+GNt2LvtGjaP683b8Wea3rTXv78EHnjqdi7LZj2zfNTsWebHrWH27dfir2HudO+fH0p9nzTq3Z5eO+h2PuYNe3nHyIbYi8wPWurlx8ib7wTey8zpn3z7zuxl5jetcXtlmdin5TYIbFDYofEDokdEjskdkjskNghsUNih8QOiR0SOyR2SOyQ2CGxQ2KHxA6JHRI7JHZI7JDYIbFDYofEDokdEjskdkjskNghsUNih8QOiR0SOyR2SOyQ2CGxQ2KHxA6JHRI7JHZI7JDYIbFDYofEDokdEjskdkjskNghsUP7xz7c1QfdeDbC2HfX7/wNn0YY+9MPO4xt2GFsw+5iG3YY27C72IZ90cU27IsstmE/imIb9qMmtmFvNLENeyOJbdhPktiG/aSIbdjPitiG/SyIbdgvgtiG/eL0sQ371eljG/ark8c27L9OHtuwAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAgPP1Gxnc63wbq8fMAAAAAElFTkSuQmCC"
+		    img1.onload=function(){
+		      img2.src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAtgAAAEYBAMAAACU/ZwfAAAAG1BMVEX///+/v79fX1+fn58/Pz9/f38fHx/f398AAABdBBfIAAAAAXRSTlMAQObYZgAABQRJREFUeJzt3M1rG0cYwOFNmuI92lDaHlVDi48uLqVHUwzRMVACvbc4PppSeq/zgf7sStbH7kramdn17GDS57nZerWa/XliKZKlqgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAgGfo5eLRh4ML6vUF73uv+Wo98DDl6j4zYhckdkFiFyR2QWIXJHZBYhckdkFiFyR2QWIXJHZBYhckdkFiFyR2QWIXJHZBYhckdkFiFyR2QWIXJHZBYhckdkFiFyR2QWIXJHZBYhckdkFiFyR2QWIXJHZBYhckdkFiFzR97H8WIR+Txjo3svne5eMXL+5CBx0xPnAxKyfHDtp4s4t5zPusseexlaSMzXrqnVyEjzp8PKHebG/8VXD6YxWMfZkzdnwlCWOdW2mv8vfIYYePr4T/MR6c8jw4/SYYe923bn/xhNjhlVymjXU2X+uqP+cfXzoZsJgqtk/avyZ6D1W3Zp8QO2El8bFFZ/NtvrOs91X8wIPHBy6mStpOdeRI9bFlDI+dsJL42Eqzm3bX/SvlyEPHBy4mbTvVkQPV7eHRsV8mrCQ6treQzTcuv5xkPGFjd8cvgpOXwdjbePXhYUfETllJdGxvePP11d0k4wMXk7ad6p6LZzlj59vYremU4cXi35HjAxeTtp3q45fu2tX7Rx0TO7yS07Sx/fGk4dHjAxcT/tFsf4T18Yuvc8YO/ppsNlN47GA+bXrseNLGbsZ7HrlvbH8k9dFLm/+2by5/UuzdSm5vb/+8ubn59fz8/O3bt79dXV2dnZ3dH4xFnA6qN3J82GJ2++TT8hSXZ3izPMPvl6e4PMMfz86+2Yu55zpr7M1BLwMjSWPz9cDs+Y1HK3VM+kSU2F1iP4fYifdaYueInfgQSOwssRMfA4mdI3Zsa/8kdsbY4a392h1klTF28KnGPzwaWckXO/Bc48O92Cv5Yvdv7U+nHmc/fpEx9t99sVcvMIhdZY3d95L+69WFYldZY/e8pr8+tNhV3thHt/bD+rlRsau8sUPErsQWO+g51RNb7M87dtT6NUixS8TevLoudonYm9fixc4x/kO49bau2FnGw38/sj2a2FnGg38Rv4srdp7xL+76Y7/ZXlfsTOP9Lws27zwQO9d479tCdhtb7HzjPW94ap2y2NnGe942OWuuK3a+8RfzI63bZyz2tOMdYov9lDGxxa7EFjtI7CixK7HFDhI7SuxK7P957JDVU8Pj3k49UexfmttbvUX60c3G6u3g5+ffta5bJyy7eUJ20tjfxleyOsVxHxQwUewX8YWcNtdNmG4FmjR2fCnra1/El7w4+EyLiWLHPvps0f5skpT9NGuGJ41dfZ22klEf7jJV7Ohnn3W39l1ktt1n2tgnkaVsr3wRPb9Wrf2vD8zXA7NR4yk/+vbWjv1DmLVmp40dW8p18vkd+YSt3hudd05z4HjVuY/s0drakf3UCTtx7PBSmludR8+vuU/ffGO62NFfDQO29nX7liaOHV5Ks5JxH6LYY74emI0ajy76UerW7nadOnZoKR/uD864V7OxC8SO30embu3XnVuaOnZoKe8Oj9an74Nvj+rWGzj+KH4fkra1P913bmny2P1L6a5kHjy3domB9QaOr0XvI9O29rvuLU0eu38p79LGDm5kYL2B42vx+8iUrb23sQvEBgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABG+Q93J2ICIan97QAAAABJRU5ErkJggg=="
+		      img2.onload=function(){
+		        draw()
+		      }
+		    }
+		  }
+		  start()
+		</script>
+	</body>
+</html>

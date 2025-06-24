@@ -1,0 +1,973 @@
+
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8" name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
+		<title></title>
+		<style>
+			body { margin: 0; color:#000}
+		</style>
+	</head>
+	<script src="src/three.min.js"></script>
+	<body>
+		<script>
+		
+	    const numberPath=[
+			[],
+			[[28,824],[-164,700],[-292,644],[-432,592],[-436,328],[-300,352],[-196,392],[-84,468],[-84,-720],[228,-728],[228,824]],[[-448,688],[-448,408],[-272,520],[-72,560],[40,544],[112,492],[144,416],[148,320],[96,184],[-28,52],[-236,-112],[-364,-228],[-444,-340],[-496,-456],[-516,-552],[-516,-720],[500,-720],[500,-460],[-148,-460],[-136,-408],[-76,-332],[96,-196],[204,-128],[372,36],[464,208],[488,360],[468,536],[380,672],[280,752],[84,812],[-120,800],[-276,764]],[[-408,732],[-408,476],[-280,544],[-120,568],[-24,560],[44,536],[84,496],[116,420],[116,340],[88,268],[12,204],[-84,180],[-248,172],[-252,-64],[-68,-80],[56,-116],[120,-160],[156,-232],[164,-336],[124,-424],[60,-476],[-60,-500],[-236,-496],[-364,-452],[-464,-392],[-468,-668],[-332,-724],[-176,-744],[60,-736],[280,-664],[416,-552],[460,-448],[492,-280],[444,-112],[356,-12],[248,40],[140,64],[292,128],[396,232],[432,332],[444,472],[412,592],[316,712],[212,772],[-12,812],[-208,800]],[[84,788],[84,384],[-304,-168],[88,-168],[84,388],[84,792],[380,792],[380,-168],[592,-168],[596,-400],[380,-400],[380,-724],[88,-724],[92,-400],[-584,-400],[-584,-168],[-340,120],[-112,444]],[[-368,788],[-424,-48],[-120,-32],[24,-52],[124,-120],[164,-208],[164,-320],[140,-392],[68,-460],[-52,-504],[-204,-500],[-356,-460],[-448,-412],[-448,-680],[-304,-724],[-164,-744],[4,-744],[164,-704],[312,-624],[416,-508],[484,-344],[488,-184],[452,-32],[368,96],[276,160],[136,208],[44,220],[-132,212],[-116,528],[432,528],[432,788]],[[440,504],[316,556],[180,572],[68,552],[-20,512],[-92,440],[-144,360],[-176,264],[-196,168],[-204,72],[-200,-80],[-188,-268],[-160,-368],[-124,-432],[-80,-476],[-20,-504],[52,-512],[120,-496],[188,-432],[220,-352],[236,-264],[228,-144],[196,-72],[140,-20],[84,4],[32,8],[-28,4],[-80,-20],[-132,-72],[-184,-140],[-188,76],[-100,176],[12,232],[156,244],[272,224],[400,152],[480,40],[532,-80],[544,-208],[516,-404],[460,-524],[352,-640],[204,-720],[56,-752],[-116,-732],[-260,-672],[-364,-576],[-460,-400],[-500,-216],[-508,-32],[-492,172],[-444,360],[-360,536],[-260,652],[-136,740],[4,792],[172,816],[316,804],[436,776]],
+			[[-524,792],[-524,528],[196,528],[-12,160],[-160,-172],[-244,-408],[-292,-576],[-316,-716],[20,-712],[84,-424],[144,-208],[216,-16],[308,180],[528,588],[528,792]],
+			[[-4,816],[0,584],[-72,568],[-128,512],[-156,452],[-172,384],[-164,312],[-136,260],[-108,224],[-60,196],[4,184],[0,-56],[-68,-64],[-152,-116],[-204,-188],[-224,-268],[-212,-348],[-192,-416],[-148,-472],[-76,-512],[20,-520],[100,-504],[180,-448],[212,-376],[220,-264],[200,-176],[156,-112],[92,-72],[0,-56],[4,192],[8,188],[60,188],[124,224],[168,280],[188,356],[172,460],[136,528],[68,580],[0,584],[-4,816],[96,808],[236,776],[356,704],[436,616],[480,504],[492,372],[440,248],[360,156],[240,76],[368,20],[444,-44],[504,-128],[532,-248],[532,-376],[508,-472],[452,-564],[368,-644],[216,-716],[52,-744],[-100,-740],[-300,-684],[-440,-572],[-516,-444],[-532,-296],[-500,-152],[-408,-28],[-316,32],[-244,68],[-364,160],[-460,304],[-476,480],[-428,608],[-308,736],[-164,792]],
+			[[-40,812],[-36,576],[-132,540],[-204,448],[-228,328],[-212,212],[-172,136],[-116,80],[-28,56],[36,60],[108,88],[160,148],[192,244],[192,360],[148,480],[76,544],[28,568],[-36,576],[-40,820],[80,812],[196,780],[296,720],[376,632],[444,520],[500,360],[516,172],[508,-64],[468,-288],[360,-504],[244,-636],[124,-704],[-28,-740],[-148,-752],[-260,-740],[-356,-724],[-452,-692],[-448,-432],[-324,-488],[-204,-500],[-68,-496],[56,-440],[124,-364],[176,-264],[204,-140],[204,-28],[148,-104],[52,-156],[-104,-184],[-252,-160],[-348,-104],[-444,-12],[-516,136],[-532,256],[-528,376],[-500,496],[-436,604],[-360,696],[-252,768],[-120,808],[-44,820]],
+			[[-436,596],[-540,528],[-644,464],[-728,444],[-780,432],[-780,232],[-684,248],[-580,288],[-524,328],[-524,-544],[-284,-548],[-284,40],[56,44],[60,-88],[76,-204],[124,-372],[204,-488],[284,-536],[388,-568],[452,-572],[448,-384],[408,-376],[356,-336],[320,-248],[292,-40],[308,212],[348,340],[384,392],[444,412],[500,408],[540,376],[584,300],[608,152],[616,-60],[592,-248],[564,-320],[528,-360],[488,-376],[452,-384],[448,-384],[452,-572],[580,-544],[676,-496],[752,-416],[820,-264],[844,-120],[856,32],[844,216],[816,340],[776,424],[724,496],[632,560],[540,584],[424,584],[308,564],[244,528],[172,472],[132,408],[84,276],[56,48],[52,44],[-284,40],[-284,596]],
+			[[-284,592],[136,432],[136,232],[220,248],[328,288],[388,332],[384,-552],[628,-552],[632,592],[476,596],[368,528],[228,460],[136,432],[-284,592],[-440,600],[-564,516],[-684,464],[-780,436],[-780,224],[-652,256],[-564,300],[-524,332],[-524,-552],[-284,-552]],
+			[[-436,600],[-532,536],[-652,472],[-780,428],[-780,232],[-668,248],[-576,280],[-520,316],[-524,-544],[-284,-548],[132,292],[260,376],[372,392],[472,388],[520,364],[556,308],[560,240],[536,152],[436,32],[224,-140],[132,-240],[84,-344],[68,-440],[68,-548],[820,-544],[820,-352],[340,-352],[388,-268],[496,-176],[628,-76],[728,20],[800,144],[812,272],[796,384],[740,480],[652,544],[504,588],[340,576],[208,536],[124,504],[132,292],[-280,-544],[-284,596]]
+			
+			]
+		.map(a=>a.map(b=>b.map(c=>c/1000)))
+		const circlePath=new Array(24).fill(0).map((xx,x)=>
+			[Math.cos(x*Math.PI/12),Math.sin(x*Math.PI/12)].map(a=>a*.9)
+		)
+		const minePath=new Array(24).fill(0).map((xx,x)=>
+			[Math.cos(x*Math.PI/12),Math.sin(x*Math.PI/12)].map(a=>a*(x%3==0?.6:.4))
+		)	
+		const outerMinePath=new Array(24).fill(0).map((xx,x)=>
+			[Math.cos(x*Math.PI/12),Math.sin(x*Math.PI/12)].map(a=>a*(x%3==0?.9:.7))
+		)	
+		const flagPath=[[-0.32399999999999995,0.56],[-0.33599999999999997,-0.5920000000000001],[-0.21199999999999997,-0.5920000000000001],[-0.21199999999999997,0.08799999999999997],[0.46799999999999997,0.33199999999999996]]//[[0.45999999999999996,0.372],[-0.45199999999999996,0.656],[-0.45199999999999996,-0.6599999999999999],[-0.268,-0.6639999999999999],[-0.26,0.10399999999999998]]
+		</script>
+		<script>
+		
+		function gengame(){
+			let game={}
+			
+			
+			//基本
+			
+			const ctx = document.createElement('canvas').getContext('2d');
+			ctx.canvas.width = 2048;
+			ctx.canvas.height = 2048;
+			ctx.fillStyle = '#eee';
+			ctx.fillRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+			
+			const texture = new THREE.CanvasTexture(ctx.canvas);
+			texture.generateMipmaps=false
+			texture.magFilter=THREE.LinearFilter
+			const material = new THREE.MeshLambertMaterial({
+			  map: texture
+			});
+			const scene = new THREE.Scene();
+			const camera = new THREE.OrthographicCamera( -2,2,2,-2, 1, 1000 );
+			scene.add( camera );
+			
+			const renderer = new THREE.WebGLRenderer();
+			//renderer.setSize( window.innerWidth, window.innerWidth );
+			
+					
+			const geometry = new THREE.SphereGeometry( 1, 128, 64 );
+			
+			const sphere = new THREE.Mesh( geometry, material );
+			scene.add( sphere );
+			const light = new THREE.PointLight(0xffffff);
+			light.position.set(80,60,200)
+			const Alight = new THREE.AmbientLight( 0xffffff,0.3 ); 
+			scene.add( Alight );
+			scene.add(light)
+			
+			camera.position.z = 2;
+					
+			//renderer.render( scene, camera );
+			
+			//画布
+			game.update=function (){
+				texture.needsUpdate=true
+				renderer.render( scene, camera );
+			}
+			game.render=function (){
+				renderer.render( scene, camera );
+			}
+			game.canvas=renderer.domElement
+			game.size={}
+			game.resize=function(a,b,x,r){
+				/*
+				a 画布宽度
+				b 画布高度
+				x 球体直径
+				r 分辨率
+				*/
+			    game.size.a=a
+				game.size.b=b
+				let xmax=Math.max(a,b)*4
+				let xmin=Math.min(a,b)/4
+				x=Math.min(xmax,x)
+				x=Math.max(xmin,x)
+				game.size.x=x
+				renderer.setSize( a, b)
+				camera.left=-a/x
+				camera.right=a/x
+				camera.top=b/x
+				camera.bottom=-b/x
+				camera.updateProjectionMatrix()
+				renderer.render( scene, camera )
+			}
+			game.resizeSphere=function(scale){
+				game.resize(game.size.a,game.size.b,game.size.x*scale)
+				/*
+				game.size.x*=scale
+				let x=game.size.x
+				camera.left  =-game.size.a/x
+				camera.right = game.size.a/x
+				camera.top   = game.size.b/x
+				camera.bottom=-game.size.b/x
+				camera.updateProjectionMatrix()
+				renderer.render( scene, camera )
+				*/
+			}
+			game.resizeNoSphere=function(a,b){
+				game.resize(a,b,game.size.x)
+			}
+			
+			game.resize(window.innerWidth,window.innerHeight,0.8*Math.min(window.innerWidth,window.innerHeight))
+			
+		    
+			
+			
+			
+			
+			
+			
+			//游戏基础
+			game.genMap=function(n,ratio,setting){
+				
+				game.gameMap=genVertex(n,setting).facecenter
+				game.gameMap.mineRatio=ratio||0.22
+				game.drawMap()
+				
+				
+			}
+			game.genMine=function(n,exclude){
+				exclude=exclude||[]
+				let mineList=[]
+				let selectList=game.gameMap.filter(x=>!exclude.includes(x))
+				n=Math.min(n,selectList.length)
+				while(mineList.length<n){
+					let face=selectList[Math.floor(Math.random()*selectList.length)]
+					if(!mineList.includes(face)){
+						mineList.push(face)
+						face.mine=true
+					}
+				}
+				game.gameMap.map(face=>{
+					if(face.mine){
+						face.num=-1
+						face.insidePath=genNumber(face,minePath)
+						face.insideOPath=genNumber(face,outerMinePath)
+						
+					}else{
+						face.num=face.neighbor.filter(f=>f.mine).length
+						if(face.num>0){
+							face.insidePath=genNumber(face,numberPath[face.num])
+						}
+						
+					}
+				})
+			}
+			game.deleteMap=function(){
+				delete game.gameMap
+			}
+			
+			game.drawMap=function(){
+				ctx.fillStyle=game.graphic.background
+				ctx.fillRect(0,0,ctx.canvas.width,ctx.canvas.height)
+				ctx.fillStyle=game.graphic.blockColor
+				game.gameMap.forEach(f=>{
+					ctx.beginPath()
+					f.innerPath1.forEach(c=>{
+						ctx.lineTo(c[0],c[1])
+					})
+					ctx.fill()
+				})
+			   
+				game.update()
+			}
+			//图形
+			game.graphic={}
+			game.graphic.background="#bbb"
+			game.graphic.blockColor="#666"
+			game.graphic.numberColor=[
+			     'rgb(65,80,190)',
+			     'rgb(30,100,5)',
+			     'rgb(170,5,5)',
+			     'rgb(15,15,140)',
+			     'rgb(125,5,5)',
+			     'rgb(5,125,125)',
+				 'rgb(30,100,5)',
+				 'rgb(170,5,5)',
+				 'rgb(15,15,140)',
+				 'rgb(125,5,5)',
+				 'rgb(5,125,125)',
+				 'rgb(170,5,5)'
+			]
+			game.graphic.drawMap=game.drawMap
+			game.graphic.clear=function(face){
+				ctx.fillStyle=game.graphic.background
+				ctx.beginPath()
+				face.outerPath1.forEach(c=>{
+					ctx.lineTo(c[0],c[1])
+				})
+				ctx.fill()
+			   
+				game.update()
+			}
+			game.graphic.drawBlock=function(face){
+			    ctx.fillStyle=game.graphic.blockColor
+			    ctx.beginPath()
+			    face.innerPath1.forEach(c=>{
+			    	ctx.lineTo(c[0],c[1])
+			    })
+			    ctx.fill()
+				game.update()
+			}
+			game.graphic.flag=function(face){
+				ctx.fillStyle=game.graphic.background
+				ctx.beginPath()
+				face.innerCircle.forEach(c=>{
+					ctx.lineTo(c[0],c[1])
+				})
+				ctx.fill()
+			    ctx.fillStyle="#068"
+			    ctx.beginPath()
+			    face.flagPath.forEach(c=>{
+			    	ctx.lineTo(c[0],c[1])
+			    })
+			    ctx.fill()
+				game.update()
+			}
+			game.graphic.unflag=function(face){
+				ctx.fillStyle=game.graphic.background
+				ctx.beginPath()
+				face.outerPath1.forEach(c=>{
+					ctx.lineTo(c[0],c[1])
+				})
+				ctx.fill()
+				ctx.fillStyle=game.graphic.blockColor
+				ctx.beginPath()
+				face.innerPath1.forEach(c=>{
+					ctx.lineTo(c[0],c[1])
+				})
+				ctx.fill()
+				game.update()
+			}
+			game.graphic.drawInside=function(face){//no refresh
+				if(face.insidePath){
+					
+			    ctx.fillStyle=game.graphic.background
+			    ctx.beginPath()
+			    face.innerPath2.forEach(c=>{
+			    	ctx.lineTo(c[0],c[1])
+			    })
+			    ctx.fill()
+				if(face.mine){
+					ctx.fillStyle="#ff2400"
+					ctx.beginPath()
+					face.insideOPath.forEach(c=>{
+						ctx.lineTo(c[0],c[1])
+					})
+					ctx.fill()
+				}
+				ctx.fillStyle=face.mine?"#111":game.graphic.numberColor[face.num-1]
+				ctx.beginPath()
+				face.insidePath.forEach(c=>{
+					ctx.lineTo(c[0],c[1])
+				})
+				ctx.fill()
+				
+				//game.update()
+				}else{
+					//game.graphic.clear(face)
+					ctx.fillStyle=game.graphic.background
+					ctx.beginPath()
+					face.outerPath1.forEach(c=>{
+						ctx.lineTo(c[0],c[1])
+					})
+					ctx.fill()
+								   
+					//game.update()
+				}
+			}
+			game.graphic.rotate=function(x,y){
+				sphere.rotation.y+=x
+				sphere.rotation.x-=y
+				sphere.rotation.x=Math.min(sphere.rotation.x,Math.PI/2)
+				sphere.rotation.x=-Math.min(-sphere.rotation.x,Math.PI/2)
+				renderer.render( scene, camera )
+			}
+			game.graphic.HD=function(r){
+				r=r||window.devicePixelRatio||1
+				renderer.setPixelRatio(r)
+				game.render()
+			}
+			game.graphic.noHD=function(){
+				renderer.setPixelRatio(1)
+				game.render()
+			}
+			
+			
+			
+			//游戏逻辑
+			game.motion={}
+			game.motion.flag=function(face){
+				if(face.flag){
+					face.flag=false
+					game.graphic.unflag(face)
+				}else{
+					face.flag=true
+					game.graphic.flag(face)
+				}
+			}
+			game.motion.open=function(face){//no refresh
+				face.open=true
+				game.graphic.drawInside(face)
+				if(face.mine&&!game.motion.fail){
+					game.motion.fail=true
+					setTimeout(()=>{
+						alert("寄")
+					},200)
+				}
+				return face.num
+			}
+			game.motion.autoOpen=function(faces){
+				let toOpenList=Array.from(faces)
+				while(toOpenList.length>0){
+					const f=toOpenList.pop()
+					if(game.motion.open(f)==0){
+						f.neighbor.forEach(n=>{
+							if(!n.open){
+								toOpenList.push(n)
+							}
+						})
+						
+					}
+				}
+				game.update()
+			}
+			//拖动，单双击，滚轮
+			game.scroll={}
+			game.scroll.Pos=[0,0]
+			game.scroll.ing=false
+			game.scroll.keyControl=false
+			document.addEventListener("keydown",e=>{
+				if(e.key=="m")[
+					game.scroll.keyControl=true
+				]
+			})
+			document.addEventListener("keyup",e=>{
+				if(e.key=="m")[
+					game.scroll.keyControl=false
+				]
+			})
+			
+			renderer.domElement.addEventListener("mousedown",e=>{
+				
+				let mousePos=mouseCoorToRelative(e.offsetX,e.offsetY)
+				if(mousePos[0]*mousePos[0]+mousePos[1]*mousePos[1]>=1||game.scroll.keyControl){//背景
+					game.scroll.Pos=mousePos
+					game.scroll.ing=true
+					renderer.domElement.addEventListener("mousemove",scrollControl)
+				}else{
+					
+					let mouseSphereCoor=mouseCoorToSphere(e.offsetX,e.offsetY)
+					
+					let face=findInside(game.gameMap,mouseSphereCoor)
+					if(face){
+						if(face.open&&face.num==0){//空白面
+							game.scroll.Pos=mousePos
+							game.scroll.ing=true
+							renderer.domElement.addEventListener("mousemove",scrollControl)
+							
+						}else{
+							if(!face.open){//未打开面
+								
+							game.motion.flag(face)
+							}
+							if(face==game.lastFace&&(Date.now()-game.lastTime)<200){
+								mouseOpen(face)
+								game.info.style.display="block"
+							}
+							game.lastFace=face
+							game.lastTime=Date.now()
+							//if(game.gameMap.every(f=>f.open||(f.flag&&f.mine))&&!game.motion.success){
+							if(game.gameMap.every(f=>f.open||(f.mine&&!f.open))&&!game.motion.success&&!game.motion.fail){
+								game.motion.success=true
+								setTimeout(()=>{
+									
+								alert("你赢了")
+								},200)
+							}
+							let mine_num=game.gameMap.filter(x=>x.mine&&!x.open).length
+							let flag_num=game.gameMap.filter(x=>x.flag&&!x.open).length
+							let show_num=mine_num-flag_num
+							game.info.innerText="剩余地雷 "+show_num
+							if(game.motion.fail){
+								game.info.innerText+="\n寄"
+							}else if(game.motion.success){
+								game.info.innerText="你赢了"
+							}
+						}
+						
+					}
+					
+				}
+				e.preventDefault()
+			})
+			
+			function mouseOpen(face){
+				
+				if(!face.open){
+					
+				
+					if(!game.motion.clicked){
+						game.motion.clicked=true
+						game.genMine(Math.round(game.gameMap.length*game.gameMap.mineRatio),[face].concat(face.neighbor))
+					}
+					game.motion.autoOpen([face])
+					//game.update()
+				}else{
+					let flagList=face.neighbor.filter(x=>x.flag)
+					if(flagList.length==face.num){
+						game.motion.autoOpen(face.neighbor.filter(x=>(!x.flag)&&(!x.open)))
+					}
+				}
+				
+			}
+			
+			function scrollControl(e){
+				let scrollP1=mouseCoorToRelative(e.offsetX,e.offsetY)
+				game.graphic.rotate(
+				scrollP1[0]-game.scroll.Pos[0],
+				scrollP1[1]-game.scroll.Pos[1]
+				)
+				game.scroll.Pos=scrollP1
+				
+			}
+			
+			renderer.domElement.addEventListener("mouseup",e=>{
+				game.scroll.ing=false
+				renderer.domElement.removeEventListener("mousemove",scrollControl)
+			})
+			
+			
+			
+			renderer.domElement.addEventListener("wheel",e=>{
+				game.resizeSphere(Math.pow(1.1,-e.deltaY/100))
+			})
+			
+			renderer.domElement.οncοntextmenu=function(e){
+				e.preventDefault()
+			}
+			
+			renderer.domElement.addEventListener("dblclick",e=>{
+				e.preventDefault()
+			})
+			
+			
+			//鼠标坐标计算
+			function mouseCoorToRelative(x,y){
+				x=(x*2/renderer.domElement.clientWidth-1)*camera.right
+				y=-(y*2/renderer.domElement.clientHeight-1)*camera.top
+				return [x,y]
+			}
+			function mouseCoorToSphere(x,y){
+				let c=mouseCoorToRelative(x,y)
+				if(c[0]*c[0]-c[1]*c[1]>1){
+					return false
+				}
+				let c0=[Math.sqrt(1-c[0]*c[0]-c[1]*c[1]),
+				c[0],c[1]
+				]
+				let c1=[
+					c0[0]*Math.cos(sphere.rotation.x)-c0[2]*Math.sin(sphere.rotation.x),
+					c0[1],
+					c0[2]*Math.cos(sphere.rotation.x)+c0[0]*Math.sin(sphere.rotation.x)
+				]
+				let c2=[
+					c1[0]*Math.sin(sphere.rotation.y)-c1[1]*Math.cos(sphere.rotation.y),
+					c1[1]*Math.sin(sphere.rotation.y)+c1[0]*Math.cos(sphere.rotation.y),
+					c1[2]
+				]
+				return c2
+			}
+			
+			game.touch=[]
+			function averageDist(coors){
+				const average=[
+					coors.reduce((a,b)=>a+b[0],0)/coors.length,
+					coors.reduce((a,b)=>a+b[1],0)/coors.length
+				]
+				
+				const distSum=coors.reduce((a,b)=>
+					a+Math.pow(b[0]-average[0],2)+Math.pow(b[1]-average[1],2)
+				,0)
+				return Math.sqrt(distSum/coors.length)
+			}
+			console.log(averageDist([[0,0],[1,0]]))
+			
+			function touchUpdate(e){
+				game.touch=Array.from(e.targetTouches).map(t=>[t.clientX,t.clientY])
+			}
+			renderer.domElement.addEventListener("touchstart",touchUpdate)
+			renderer.domElement.addEventListener("touchend",touchUpdate)
+			renderer.domElement.addEventListener("touchcancel",touchUpdate)
+			renderer.domElement.addEventListener("touchmove",e=>{
+				const newTouch=Array.from(e.targetTouches).map(t=>[t.clientX,t.clientY])
+				if(game.touch.length==1){
+					const postCoor=mouseCoorToRelative(game.touch[0][0],game.touch[0][1])
+					const newCoor=mouseCoorToRelative(newTouch[0][0],newTouch[0][1])
+					game.graphic.rotate(newCoor[0]-postCoor[0],newCoor[1]-postCoor[1])
+				}else if(game.touch.length>=2){
+					game.resizeSphere(averageDist(newTouch)/averageDist(game.touch))
+				}
+				game.touch=newTouch
+				e.preventDefault()
+			})
+			
+			return game
+			
+			
+			
+		}
+		</script>
+		
+		<script>
+			//获取20面体坐标
+			function icosahedron(x,y){
+					y=y-Math.floor(y/5)*5 //y [0,5)
+					const yn=Math.floor(y) //yn {0,1,2,3,4}
+					const ym=y % 1 //ym [0,1)
+					if(yn>0){
+						const r=icosahedron(x,ym)
+						return [
+							r[0]*Math.cos(Math.PI*yn*2/5)-r[1]*Math.sin(Math.PI*yn*2/5),
+							r[0]*Math.sin(Math.PI*yn*2/5)+r[1]*Math.cos(Math.PI*yn*2/5),
+							r[2]
+						]
+					}
+					
+					const r1=1/(2*Math.sin(Math.PI/5))
+					const R=1/(2*Math.sqrt(1-r1*r1))
+					const h1=R-Math.sqrt(1-r1*r1)
+					if(x<=1){
+						const xm=x //xm [0,1]
+						return [
+							-Math.sin(Math.PI/5)*xm*ym+r1*x,
+							Math.cos(Math.PI/5)*xm*ym,
+							h1*x+R*(1-x)
+						]
+					}else if(x<=2){
+						const xm=x-1 //xm [0,1]
+						const c1=[r1,0,h1]
+						const c2=[
+							r1*Math.cos(Math.PI/5),
+							1/2,
+							-h1
+						]
+						if(xm+ym<=1){
+							return [
+								(1-xm)*c1[0]+xm*c2[0]-Math.sin(Math.PI/5)*ym,
+								(1-xm)*c1[1]+xm*c2[1]+Math.cos(Math.PI/5)*ym,
+								(1-xm)*c1[2]+xm*c2[2]
+							]
+						}else{
+							return[
+								(1-xm)*c1[0]+xm*c2[0]
+								-Math.sin(Math.PI/5)*(1-xm)
+								-Math.sin(Math.PI*2/5)*(ym+xm-1),
+								(1-xm)*c1[1]+xm*c2[1]
+								+Math.cos(Math.PI/5)*(1-xm)
+								+Math.cos(Math.PI*2/5)*(ym+xm-1),
+								(1-xm)*c1[2]+xm*c2[2]
+							]
+						}
+					}else{
+						const c=icosahedron(3-x,ym)
+						return [
+							c[0]*Math.cos(Math.PI/5)-c[1]*Math.sin(Math.PI/5),
+							c[0]*Math.sin(Math.PI/5)+c[1]*Math.cos(Math.PI/5),
+							-c[2]
+						]
+					}
+			}
+			
+			
+			
+			
+			
+			function toSphereAngle(c){
+					const mod=Math.sqrt(c[0]*c[0]+c[1]*c[1]+c[2]*c[2])
+					const t1=(Math.atan2(c[1],c[0])+Math.PI*2)%(Math.PI*2)
+					const t2=Math.asin(c[2]/mod)
+					return [t1,t2]
+				}
+			function toSphere(c){
+					const mod=Math.sqrt(c[0]*c[0]+c[1]*c[1]+c[2]*c[2])
+					return [c[0]/mod,c[1]/mod,c[2]/mod]
+				}
+			
+			function genVertex(N,setting){
+				let vertexLimit=0.5
+				let edgeRatio=1
+				let radiusRatio=0.66
+				
+				let facecenter=[]
+				let facecorner=[]
+			if(setting!="quad"){
+					
+			
+				for(let i=1;i<=N;i++){
+				for(let j=0;j<i*5;j++){	
+				facecenter.push({coor3d:icosahedron(i/N,j/i)})
+				facecenter.push({coor3d:icosahedron(3-i/N,j/i)})
+				}
+				}
+				for(let i=1;i<N;i++){
+				for(let j=0;j<N*5;j++){
+				facecenter.push({coor3d:icosahedron(i/N+1,j/N)})
+				}
+				}
+				facecenter.push({coor3d:icosahedron(0,0)})
+				facecenter.push({coor3d:icosahedron(3,0)})
+				for(let i=0;i<N;i++){
+				for(let j=0;j<N*5;j++){
+				facecorner.push({coor3d:icosahedron(i/N+1+1/3/N,1/3/N+j/N)})
+				facecorner.push({coor3d:icosahedron(i/N+1+2/3/N,2/3/N+j/N)})
+				}
+				}
+				for(let i=1;i<=N;i++){
+				for(let j=0;j<i;j++){
+				for(let k=0;k<5;k++){
+			    facecorner.push({coor3d:icosahedron(   i/N-1/3/N, k+(1/3/N+j/N)/(i/N-1/3/N))})
+				facecorner.push({coor3d:icosahedron(3-(i/N-1/3/N),k+(1/3/N+j/N)/(i/N-1/3/N))})
+				if(i<N){
+				facecorner.push({coor3d:icosahedron(   i/N+1/3/N, k+(2/3/N+j/N)/(i/N+1/3/N))})
+				facecorner.push({coor3d:icosahedron(3-(i/N+1/3/N),k+(2/3/N+j/N)/(i/N+1/3/N))})
+				}
+				}
+				}
+				}
+				if(setting=="tri"){
+				;[facecenter,facecorner]=[facecorner,facecenter];
+					
+				}
+			}else{
+				vertexLimit=4
+				for(let i=0;i<=N;i++){
+					for(let j=0;j<=N;j++){
+						for(let k=0;k<=N;k++){
+							if(i==0||i==N||j==0||j==N||k==0||k==N){
+								facecorner.push({coor3d:[
+									i*2/N-1,j*2/N-1,k*2/N-1
+								]})
+							}
+						}
+					}
+				}
+				for(let i=0;i<=2*N;i++){
+					for(let j=0;j<=2*N;j++){
+						for(let k=0;k<=2*N;k++){
+							if((i==0||i==2*N||j==0||j==2*N||k==0||k==2*N)&&[i,j,k].filter(x=>x&1).length==2
+							
+							){
+								facecenter.push({coor3d:[
+									i/N-1,j/N-1,k/N-1
+								]})
+							}
+						}
+					}
+				}
+				
+			}
+			
+				facecenter.forEach(a=>{
+					
+					a.vertex=facecorner.filter(b=>
+					Math.pow(a.coor3d[0]-b.coor3d[0],2)+
+					Math.pow(a.coor3d[1]-b.coor3d[1],2)+
+					Math.pow(a.coor3d[2]-b.coor3d[2],2)<vertexLimit/(N*N)
+					)
+					
+					
+					a.sphereAngle=toSphereAngle(a.coor3d)
+					
+					
+					function a_centerSort(c){
+						const c1=[
+							c[0]*Math.cos(a.sphereAngle[0])+c[1]*Math.sin(a.sphereAngle[0]),
+							c[1]*Math.cos(a.sphereAngle[0])-c[0]*Math.sin(a.sphereAngle[0]),
+							c[2]
+						]
+						const c2=[
+							c1[0]*Math.cos(a.sphereAngle[1])+c1[2]*Math.sin(a.sphereAngle[1]),
+							c1[1],
+							c1[2]*Math.cos(a.sphereAngle[1])-c1[0]*Math.sin(a.sphereAngle[1])
+						]
+						return Math.atan2(c2[2],c2[1])
+					}
+					
+					a.vertex.forEach(v=>v.angle=a_centerSort(v.coor3d))
+					a.vertex.sort((x,y)=>x.angle-y.angle) //顶点逆时针排序
+					a.vertex.forEach(v=>delete v.angle)
+					
+					a.radius=getRadius(a)*radiusRatio
+					
+					
+					
+					a.outerPath=genPoly(a.vertex)
+					a.outerPath1=genPoly(a.vertex.map(v=>{
+						return {
+							coor3d:ratio(v.coor3d,a.coor3d,-0.04*edgeRatio)
+						}
+					}))
+					a.innerPath1=genPoly(a.vertex.map(v=>{
+						return {
+							coor3d:ratio(v.coor3d,a.coor3d,0.1*edgeRatio)
+						}
+					}))
+					a.innerPath2=genPoly(a.vertex.map(v=>{
+						return {
+							coor3d:ratio(v.coor3d,a.coor3d,0.25*edgeRatio)
+						}
+					}))
+					a.innerCircle=genNumber(a,circlePath)
+					a.flagPath=genNumber(a,flagPath)
+				})
+				facecenter.forEach(a=>{
+					a.neighbor=facecenter.filter(b=>b!=a&&
+					!b.vertex.every(v=>!a.vertex.includes(v))
+					)
+				})
+				/*
+				facecorner.map(a=>{
+					a.sphereAngle=toSphereAngle(a.coor3d)
+				})
+				*/
+				return {
+					facecenter:facecenter,
+					facecorner:facecorner
+				}
+				/*
+				facecenter=[face...]
+				
+				face={
+					coor3d:[x,y,z],
+					sphereAngle:[w,t],
+					vertex:[corner...],
+					neighbor:[face...]
+				}
+				
+				corner=[
+					coor3d:[x,y,z],
+					//sphereAngle:[w,t]
+				]
+				*/
+			}
+			function getRadius(face){
+				let radius=Infinity
+				const vertex=face.vertex
+				const length=vertex.length
+				for(let i=0;i<length;i++){
+					for(let x=0;x<1;x+=1/8){
+						let coor=toSphere(ratio(vertex[i].coor3d,vertex[(i+1)%length].coor3d,x))
+						let dist=distance(coor,toSphere(face.coor3d))
+						if(dist<=radius){
+							radius=dist
+						}
+					}
+				}
+				return radius
+			}
+			function genNumber(face,path){
+				const c=path.map(p=>[1,p[0]*face.radius,p[1]*face.radius])
+				.map(p=>
+					[
+						p[0]*Math.cos(face.sphereAngle[1])-p[2]*Math.sin(face.sphereAngle[1]),
+						p[1],
+						p[2]*Math.cos(face.sphereAngle[1])+p[0]*Math.sin(face.sphereAngle[1])
+					]
+				).map(p=>
+					[
+						p[0]*Math.cos(face.sphereAngle[0])-p[1]*Math.sin(face.sphereAngle[0]),
+						p[1]*Math.cos(face.sphereAngle[0])+p[0]*Math.sin(face.sphereAngle[0]),
+						p[2]
+					]	
+				)
+				
+				return genPoly(c.map(x=>{return{coor3d:x}}))
+			}
+			function genPoly(vertex,width,height){
+				width=width||2048
+				height=height||2048
+				let length=vertex.length
+				vertex=vertex.map(x=>x.coor3d)
+				vertex.push(vertex[0])
+				const sign=vertex[0][2]>0?1:-1
+				let path=[]
+				for(let i=0;i<length;i++){
+					/*有改动*******************************************************************************************************************************/
+					const steps=Math.ceil(distance(vertex[i],vertex[i+1])
+					*32*(1+16*Math.abs(vertex[i][2])))
+					for(let x=0.0001;x<1;x+=0.99985/steps){
+						let coor=toSphereAngle(ratio(vertex[i],vertex[i+1],x))
+						path.push([coor[0]/Math.PI*width/2,height/2-coor[1]/Math.PI*height])
+					}
+				}
+				length=path.length
+				path.push(path[0])
+				let path1=[]
+				for(let i=0;i<length;i++){
+					path1.push(path[i])
+					if(path[i][0]-path[i+1][0]>width/2){//从右跨越至左
+						path1.push([path[i+1][0]+width,path[i+1][1]])
+						path1.push([width+2,height/2-(height/2+2)*sign])
+						path1.push([-2,     height/2-(height/2+2)*sign])
+						path1.push([path[i][0]-width,path[i][1]])
+					}else if(path[i][0]-path[i+1][0]<-width/2){
+						path1.push([path[i+1][0]-width,path[i+1][1]])
+						path1.push([-2,     height/2-(height/2+2)*sign])
+						path1.push([width+2,height/2-(height/2+2)*sign])
+						path1.push([path[i][0]+width,path[i][1]])
+					}
+				}
+				return path1
+			}
+			function distance(a,b){
+				return Math.sqrt(
+				Math.pow(a[0]-b[0],2)+
+				Math.pow(a[1]-b[1],2)+
+				Math.pow(a[2]-b[2],2)
+				)
+			}
+			function ratio(a,b,x){
+				return [
+					a[0]*(1-x)+b[0]*x,
+					a[1]*(1-x)+b[1]*x,
+					a[2]*(1-x)+b[2]*x
+				]
+			}
+			function findInside(faces,coor){
+				for(let i=0;i<faces.length;i++){
+					const face=faces[i]
+					const vertex=face.vertex
+					const vertexlength=vertex.length
+					if(vertex.every((v1,n,arr)=>{
+						const v2=arr[(n+1)%vertexlength]
+						return det([
+							v1.coor3d,v2.coor3d,coor
+						])>=0
+					})){
+						return face
+					}
+				}
+				return false
+			}
+			function det(m){
+				return m[0][0]*m[1][1]*m[2][2]+
+				m[0][1]*m[1][2]*m[2][0]+
+				m[0][2]*m[1][0]*m[2][1]-
+				m[0][1]*m[1][0]*m[2][2]-
+				m[0][0]*m[1][2]*m[2][1]-				
+				m[0][2]*m[1][1]*m[2][0]
+			}
+		</script>
+		<script>
+			/*
+		let game=gengame()
+		console.log(game)
+		document.body.appendChild(game.canvas)
+		game.genMap(4,0.18)
+		document.addEventListener("keydown",e=>{
+			if(e.key=="z"){
+				game.motion.autoOpen(game.gameMap)
+			}
+		})
+		*/
+		
+				</script>
+				<div id="setting" style="padding:16px;text-align:center">
+				<h2>球面扫雷</h2>	
+地图类型：<select name="" id="select">
+			<option value="hex">六边形</option>
+			<option value="quad">四边形</option>
+			<option value="tri">三角形</option>
+</select> <br>
+地图大小：<span id="inputshow1">&ensp;5</span> <input id="input1" type="range" min="1"  max="15" value="5"> <br>
+地雷密度：<span id="inputshow2">0.20</span> <input id="input2" type="range" min="0.01"  max="0.5" value="0.20" step="0.01"> <br> <br>
+<button id="btn"> 开始游戏</button> <br><br>
+<div style="width:320px;display: inline-block;">操作说明：单击放置旗子，双击打开格子，拖拽旋转球体，滚轮或双指缩放球体
+</div> <br>
+<div style="position:fixed;bottom:0;right:0;color:#666">
+
+</div>
+				</div>
+
+<script>
+function gebi(a){
+	return document.getElementById(a)
+}
+gebi("input1").oninput=()=>{
+	gebi("inputshow1").innerHTML=((gebi("input1").value.toString().length==1)?"&ensp;":"")+gebi("input1").value.toString()
+	
+}
+gebi("input2").oninput=()=>{
+	gebi("inputshow2").innerText=gebi("input2").value.toString()+((gebi("input2").value.toString().length==3)?"0":"")
+}
+gebi("btn").onclick=()=>{
+	
+
+	
+	let game=gengame()
+	document.body.appendChild(game.canvas)
+	game.canvas.style.position="fixed"
+	game.canvas.style.left="0"
+	game.canvas.style.top="0"
+	game.canvas.style.zIndex=1
+	game.genMap(gebi("input1").value,gebi("input2").value,gebi("select").value)
+	gebi("setting").style.display="none"
+	
+	game.graphic.HD()
+	
+	let infoBlock=document.createElement("div")
+	infoBlock.style.position="fixed"
+	infoBlock.style.left="0"
+	infoBlock.style.top="0"
+	infoBlock.style.padding="8px"
+	infoBlock.style.background="rgba(255,255,255,0.9)"
+	infoBlock.style.borderRadius="0 0 8px 0"
+	infoBlock.style.zIndex=2
+	infoBlock.style.display="none"
+	document.body.appendChild(infoBlock)
+	game.info=infoBlock
+	
+	window.addEventListener("resize",e=>{
+		game.resizeNoSphere(window.innerWidth,window.innerHeight)
+	})
+	
+	let lastZ=0
+	document.body.addEventListener("keydown",e=>{
+		if(e.key=="z"){
+			if(Date.now()-lastZ<=300&&game.motion.clicked){
+				game.motion.success=game.motion.fail=true
+				game.motion.autoOpen(game.gameMap)
+			}
+			lastZ=Date.now()
+		}
+	})
+	
+	
+}
+
+</script>
+	</body>
+</html>
+<!--
+更新内容：
+雷数显示
+-->
